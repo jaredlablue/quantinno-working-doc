@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantinno Long/Short: Working Document</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FDFCF9;
+  --card: #FFFFFF;
+  --border: #E8E4DA;
+  --ink: #1A1613;
+  --ink-2: #4A4239;
+  --ink-3: #8A8175;
+  --bay: #0066FF;
+  --bay-tint: #F0F5FF;
+  --palm-tint: #EFFAF4;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+.doc-header { margin-bottom: 40px; }
+.doc-header .meta { font-size: 13px; color: var(--ink-3); margin-bottom: 12px; }
+.doc-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.doc-header .intro { font-size: 17px; color: var(--ink-2); line-height: 1.6; }
+.doc-header .intro p + p { margin-top: 12px; }
+
+.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 48px;
+}
+.toc-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.toc ol { list-style-position: inside; padding-left: 0; columns: 2; column-gap: 32px; }
+.toc li { margin-bottom: 5px; font-size: 14px; }
+.toc li a { color: var(--ink-2); text-decoration: none; }
+.toc li a:hover { color: var(--bay); text-decoration: underline; }
+
+section { margin-bottom: 48px; scroll-margin-top: 20px; }
+section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+section h2 .num { color: var(--ink-3); font-weight: 500; margin-right: 10px; font-size: 18px; }
+section h3 { font-size: 16px; font-weight: 600; margin-top: 24px; margin-bottom: 10px; color: var(--ink); }
+section p { margin-bottom: 14px; color: var(--ink-2); }
+section p strong { color: var(--ink); font-weight: 600; }
+section ul, section ol { margin: 12px 0 16px 24px; }
+section li { margin-bottom: 6px; color: var(--ink-2); }
+
+.discussion {
+  background: var(--bay-tint);
+  border-left: 3px solid var(--bay);
+  padding: 16px 20px;
+  border-radius: 0 6px 6px 0;
+  margin-top: 24px;
+}
+.discussion .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  color: var(--bay);
+}
+.discussion p { color: var(--ink); margin-bottom: 8px; font-size: 15px; }
+.discussion p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 15px;
+}
+table th, table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+table th {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--bg);
+}
+table td { color: var(--ink-2); }
+
+.quiz {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 28px 24px;
+  margin-top: 16px;
+}
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.progress-track { flex: 1; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--bay); width: 0%; transition: width 0.3s ease; }
+.progress-label { font-size: 13px; color: var(--ink-3); min-width: 80px; text-align: right; }
+.score-badge { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.score-badge .ok { color: #0DB273; font-weight: 600; }
+
+.quiz-q { display: none; }
+.quiz-q.active { display: block; }
+.q-num { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.q-text { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 20px; line-height: 1.4; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  text-align: left;
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink-2);
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  line-height: 1.45;
+  transition: all 0.15s ease;
+}
+.option:hover:not(:disabled) { border-color: var(--bay); background: var(--bay-tint); }
+.option .letter { font-weight: 600; color: var(--ink-3); min-width: 18px; }
+.option.correct { border-color: #0DB273; background: var(--palm-tint); color: var(--ink); }
+.option.correct .letter { color: #0DB273; }
+.option.incorrect { border-color: #C4482E; background: #FBEEE9; color: var(--ink); }
+.option.incorrect .letter { color: #C4482E; }
+.option:disabled { cursor: default; }
+.explain {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: var(--bg);
+  border-radius: 6px;
+  border-left: 3px solid var(--bay);
+  display: none;
+}
+.explain.show { display: block; }
+.explain .label { font-size: 11px; font-weight: 600; color: var(--bay); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.explain p { color: var(--ink); font-size: 15px; line-height: 1.55; }
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn:hover:not(:disabled) { background: var(--ink); color: white; border-color: var(--ink); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
+.btn.primary:hover { background: var(--bay); border-color: var(--bay); }
+.quiz-result { display: none; text-align: center; padding: 20px 0; }
+.quiz-result.show { display: block; }
+.result-num { font-size: 48px; font-weight: 700; color: var(--bay); margin-bottom: 12px; letter-spacing: -0.02em; }
+.result-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.result-sub { color: var(--ink-2); font-size: 15px; margin-bottom: 20px; }
+
+footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* Comments */
+.comments {
+  margin-top: 16px;
+  padding: 20px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.comments-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.comment-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comment-item:last-child { border-bottom: none; padding-bottom: 4px; }
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.comment-meta .name { font-weight: 600; color: var(--ink); }
+.comment-meta .time { font-size: 12px; }
+.comment-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+.comment-action {
+  font: inherit;
+  font-size: 12px;
+  background: none;
+  border: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 0;
+}
+.comment-action:hover { color: var(--bay); }
+.comment-body {
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.comment-form {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.comment-form input,
+.comment-form textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.comment-form input:focus,
+.comment-form textarea:focus {
+  outline: none;
+  border-color: var(--bay);
+  background: white;
+}
+.comment-form textarea {
+  min-height: 68px;
+  resize: vertical;
+  line-height: 1.5;
+}
+.comment-form .form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.comment-form .hint {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.comment-form button {
+  font-size: 13px;
+  padding: 7px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+}
+.comment-form button:hover:not(:disabled) { background: var(--bay); border-color: var(--bay); }
+.comment-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+.no-comments {
+  font-size: 14px;
+  color: var(--ink-3);
+  padding: 4px 0 4px;
+}
+.comment-item.editing .comment-body { display: none; }
+.edit-form { display: none; flex-direction: column; gap: 8px; }
+.comment-item.editing .edit-form { display: flex; }
+.edit-form textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--bay);
+  border-radius: 4px;
+  background: white;
+  color: var(--ink);
+  min-height: 60px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.edit-actions { display: flex; gap: 8px; }
+.edit-actions button {
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.edit-actions .save { background: var(--ink); color: white; border: 1px solid var(--ink); }
+.edit-actions .save:hover { background: var(--bay); border-color: var(--bay); }
+.edit-actions .cancel { background: white; color: var(--ink); border: 1px solid var(--border); }
+.edit-actions .cancel:hover { background: var(--bg); }
+.comment-status {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+  min-height: 16px;
+}
+.comment-status.error { color: #C4482E; }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .wrap { padding: 28px 18px 60px; }
+  .toc ol { columns: 1; }
+  .doc-header h1 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div class="doc-header">
+  <div class="meta">DiversiFi Advisory · Internal working document · July 2026</div>
+  <h1>Quantinno Long/Short: Working Document</h1>
+  <div class="intro">
+    <p>Where I've landed on Quantinno long/short after the two advisory meetings and Alfred's recent client calls. Open questions are in Section 12 for Sajj.</p>
+    <p>Comment boxes are live at the end of each section.</p>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <ol>
+    <li><a href="#s1">Long/short mechanics</a></li>
+    <li><a href="#s2">Reading 130/30</a></li>
+    <li><a href="#s3">Why losses keep coming</a></li>
+    <li><a href="#s4">Sources of return</a></li>
+    <li><a href="#s5">Deferral and the unwind</a></li>
+    <li><a href="#s6">Core, Exchange, Overlay</a></li>
+    <li><a href="#s7">Fees</a></li>
+    <li><a href="#s8">Manager selection</a></li>
+    <li><a href="#s9">Anticipated client questions</a></li>
+    <li><a href="#s10">Client fit and exclusions</a></li>
+    <li><a href="#s11">Self-quiz</a></li>
+    <li><a href="#s12">Vocabulary and open questions</a></li>
+  </ol>
+</div>
+
+<!-- ================================================================= -->
+<section id="s1">
+  <h2><span class="num">01</span>Long/short mechanics</h2>
+  <p>It's a whole basket of stocks being longed and shorted at the same time. That's where the losses to harvest come from, regardless of which way the market goes.</p>
+
+  <h3>Where I got stuck: I thought it was one pair</h3>
+  <p>I was tunnel-visioned on this being a single pair of stocks. Pepsi against Coke, one bet, and I couldn't see how that produced enough losses to matter or why we'd be confident about it.</p>
+  <p>It isn't one pair. It's a whole basket of 400 to 600+ names depending on the account. In the sample Overlay 30/30 on slide 21, it's 200–300 long holdings and 200–300 short. A sample statement Alfred walked through on a $1M account showed 259 names long and 145 short on a $1M account.</p>
+  <p>Once it's a basket, the logic changes. It isn't a call on one name. Some go the right way, some don't, and there are enough positions in play that the aggregate produces losses. That was the piece that made it click for me.</p>
+
+  <h3>Alfred's version</h3>
+  <p>Alfred uses Bank of America against Wells Fargo to show how a single pair gets built inside the basket. Two banks, same sector, one longed and one shorted, so sector direction cancels. If the sector drops 3%, both fall, the long loses and the short gains, roughly a wash. The pair only pays if the long name outperforms the short name. Bank of America down 2.7% against Wells Fargo down 3% pockets 0.3%.</p>
+  <p>On how Quantinno picks, Alfred's framing: their algorithm and factor model decide what to go long and what to go short, based on their evaluation at the time. Slide 30 lists the factor categories (valuation, momentum, quality, sustainable earnings, management signaling, investor sentiment, behavioral bias) with 150+ underlying signals and 1,000+ stocks scored daily.</p>
+  <p>The other thing worth holding onto: positions don't stay put. Quantinno rescores continuously, so a name that's a long today can become a short in two years as fundamentals shift. There's real turnover, and some short-term gains get realized along the way. The bet is on them being right on average, not right on every name.</p>
+  <p>One client's own plain-English version, which Alfred confirmed was exactly right: borrow against the stock I already own on margin, and use that money to buy actual stock that goes long and short. Good phrasing to hear back from a client.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>How are you explaining the short side to a client who's never held one? The basket piece is what made it stick for me.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s2">
+  <h2><span class="num">02</span>Reading 130/30</h2>
+  <p>For every $100 in the account: $130 of stock bought long, $30 of stock sold short. Net market exposure is $130 minus $30 = $100, the same as owning the market outright. Gross activity is $160.</p>
+  <p>The extra $30 long and $30 short run on margin at the custodian. Slide 40 breaks the cost down: the long side pays Fed funds plus a 0.5% spread on the extension, the short side earns a rebate at Fed funds minus 0.5%, netting to roughly 0.30% pre-tax, or about 0.18% after tax at a 40.8% marginal rate.</p>
+  <p>The reason to run 130/30 instead of 100/0 is that Quantinno now has $160 of stock to work with instead of $100. More positions in play, more opportunities to realize losses each year.</p>
+  <p>Other levels: 145/45, 175/75, 200/100. Each step is more aggressive. 130/30 is the default. Slide 28 also lists beta-adjusted variants (115/45 at 0.7 beta, 150/100 at 0.5 beta) if a client wants less market exposure than the index.</p>
+
+  <h3>How the leverage level actually gets chosen</h3>
+  <p>This was the thing I kept circling in the July 15 meeting: how do you decide someone should be at 200/100 versus something smaller, and how do you get comfortable pushing it.</p>
+  <p>Where I've landed: it's our call with the client, not something their holdings dictate, and it comes down to two things.</p>
+  <ul>
+    <li><strong>Can they stomach the tracking error?</strong> Slide 18 shows target tracking error going from 1.3–1.5% at 130/30 to 3–3.5% at 200/100. Target excess return roughly doubles too, from 0.6% to 1.4%. But tracking error cuts both ways. In a 4% market year you might be up 1%. The higher you go, the more room there is to be wrong.</li>
+    <li><strong>Do they have gains elsewhere to absorb the losses?</strong> Higher leverage produces more losses. If there's nothing to apply them against, the extra tracking error buys nothing.</li>
+  </ul>
+  <p>Practical constraint: anything above 145/45 requires portfolio margin at the custodian, which carries higher account minimums and more paperwork.</p>
+  <p>The 200/100 client is someone mid-liquidity event with a large balance sheet and ongoing taxable events, where this is a slice of a $20M–$40M picture. Bigger risk for bigger benefit, knowing it won't hit every year. Similar mindset to a venture allocation.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>When a client asks which leverage level, what are you defaulting to, and how are you explaining that more tax benefit also means more tracking error?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s3">
+  <h2><span class="num">03</span>Why losses keep coming when standard tax loss harvesting runs out</h2>
+  <p>The way I think about this: the long side is a garden, the short side is a rented parking lot.</p>
+  <p><strong>The long side is a garden.</strong> Quantinno plants roughly 500 names at the start. Winners grow and get held. Losers get harvested and replanted. After four or five years of a rising market, most positions sit well above cost basis and there's nothing left to sell at a loss. That's where standard direct-indexed tax loss harvesting stops producing anything meaningful. Slide 11 shows long-only dropping to about 1% by year 4 and effectively nothing after year 5.</p>
+  <p><strong>The short side is a rented parking lot.</strong> Positions rotate constantly. Every time a shorted name rises against the position, Quantinno closes it at a loss and opens a new short somewhere else. Some stay a while, some turn over fast. That constant churn is why loss generation keeps going instead of tapering to zero. Slide 11 has 130/30 holding at 3% per year from year 6 onward.</p>
+  <p>The part I had to sit with: this isn't a clean machine where every short is a winner. Quantinno rescores names over time, so what starts as a long can become a short later. Real buying and selling, and some short-term gains realized in the process. The strategy is a bet that they're right on average with the rescoring, not perfect on any given name.</p>
+  <p>Alfred's number for the mature state: once the strategy has settled, you're looking at roughly 4% to 4.5% of account value per year in net capital losses, ongoing. Not much, but enough to keep offsetting gains on distributions or other events.</p>
+
+  <h3>Net capital losses as a percentage of beginning value</h3>
+  <p>Cash-funded accounts, from slides 11 and 19.</p>
+  <table>
+    <thead><tr><th>Year</th><th>Long-only</th><th>DEALS 130/30</th><th>DEALS 145/45</th></tr></thead>
+    <tbody>
+      <tr><td>Year 1</td><td>12%</td><td>23.0%</td><td>28.5%</td></tr>
+      <tr><td>Year 2</td><td>6%</td><td>13.0%</td><td>16.5%</td></tr>
+      <tr><td>Year 3</td><td>3%</td><td>9.0%</td><td>12.0%</td></tr>
+      <tr><td>Year 5</td><td>1%</td><td>4.0%</td><td>5.5%</td></tr>
+      <tr><td>Year 6+</td><td>~0%</td><td>3.0%</td><td>4.5%</td></tr>
+    </tbody>
+  </table>
+  <p>Alfred uses dollars, not percentages: on a $1M account at 145/45, "28.5% sounds good, $285K of losses sounds better."</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>Is anyone using a better way to explain why the losses don't dry up after year five? Garden and parking lot is what works for me.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s4">
+  <h2><span class="num">04</span>Sources of return</h2>
+  <p>Two things running at once, and they're not the same size.</p>
+  <p><strong>Tax benefit is the main one.</strong> On a $10M account at 130/30, slide 18 puts the annual net tax benefit around $340,000, or 3.4% of market value. It's mechanical. It doesn't depend on Quantinno being right about which stocks to pick.</p>
+  <p><strong>Alpha is the smaller piece.</strong> Quantinno picks longs it expects to outperform and shorts it expects to underperform. If they're right on average, that's another 0.6% at 130/30, up to 1.4% at 200/100. Real, but it's the boost, not the case.</p>
+  <p>Alfred's framing: the goal isn't necessarily to beat the market. The tax benefit is structural, and the economic outperformance is what shows up on top when it does.</p>
+  <p>When I frame this for a client, I lead with the tax benefit. Alpha is upside, not the pitch. Slide 36 backs that up. The pre-tax outperformance column is negative in plenty of months, but the tax benefit column is positive in every single one.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>When you show a client the benefit, are you leading with the annual tax number from slide 18 (roughly $340K on $10M at 130/30) or with the historical after-tax outperformance on slide 36?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s5">
+  <h2><span class="num">05</span>Deferral and the unwind</h2>
+  <p>The tax benefit is largely deferral, not elimination. Every dollar of realized loss creates a dollar of embedded gain elsewhere in the portfolio. When the client eventually unwinds, those gains get realized.</p>
+  <p>Alfred's line: the point of long/short isn't that we're getting rid of the taxes ever, we're delaying them.</p>
+  <p>What makes deferral worth something in real terms:</p>
+  <ul>
+    <li>Paying tax later is worth less than paying it today.</li>
+    <li>The client may be in a lower bracket later, whether from retirement or a move to a no-tax state.</li>
+    <li>Step-up in basis at death eliminates the deferred gain entirely.</li>
+    <li>The deferred tax dollars stay invested and compound in the meantime.</li>
+  </ul>
+  <p>Alfred's 401(k) analogy is the cleanest way to say this to a client. Contribute $24,500 this year and delay the tax, then distribute it back out to yourself next year and pay the tax. You deferred one year and then paid it. No real benefit. Long/short works the same way. Use it for a year and unwind, and the benefit reverses.</p>
+
+  <h3>What actually unwinds</h3>
+  <p>Worth being precise here, because it changes the number. Quantinno removes the 30/30 extensions and <strong>returns the core "100" to the client</strong> (slide 43). The direct-indexed middle doesn't get liquidated. So the tax cost at unwind comes from the extensions, not the whole account.</p>
+  <p>The cost lands in three buckets:</p>
+  <ol>
+    <li><strong>Long-term capital gains from the long extension.</strong> The primary source, since gains embed as the market appreciates.</li>
+    <li><strong>Short-term capital gains from the long extension.</strong> The smallest piece. Quantinno actively minimizes this because of the higher rate.</li>
+    <li><strong>Short-term capital gains from the short extension.</strong> Small embedded gain but large tax cost, because the short book turns over frequently and it's all short-term.</li>
+  </ol>
+  <p>Alfred's summary: all of this equals whatever losses you took out. Take $165K in losses over the life of the strategy, and unwinding produces roughly $165K in gains across those three buckets. That's why the strategy has to run long enough for the deferral to earn its keep.</p>
+
+  <h3>Commitment horizon</h3>
+  <p>Alfred's guidance: four years minimum. The heavy tax loss harvesting is concentrated in the first four to five years and levels off after that, so exiting inside that window means paying back the benefit before you've had time to use it. Ten years is where he'd rather be, then a gradual unwind over five.</p>
+  <p>Slide 44 contrasts an immediate unwind (extensions removed at T+1, full capital gains bill in one year) against reducing leverage over four years and spreading the bill across tax years. Same total, very different tax outcome.</p>
+  <p>Alfred wants this said before a client commits, because it determines sizing. Whatever they want for liquidity or freedom stays outside the strategy. Someone with $5M in a single name shouldn't put all $5M in.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>A client asks what happens if their situation changes in year three. What do you say?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s6">
+  <h2><span class="num">06</span>Core, Exchange, and Overlay</h2>
+  <p>Same underlying engine, deployed three ways depending on what the client brings. I'm going through these in the order they made sense to me rather than the order they appear in the deck, because two of them are straightforward and one took work.</p>
+
+  <h3>DEALS Core: the direct indexing one</h3>
+  <p>Client shows up with cash, or with a portfolio that can be rebuilt from scratch. Quantinno constructs the whole thing: the $100 direct-indexed core plus the $30 long and $30 short extensions. Losses report on the client's 1099 and their CPA applies them wherever.</p>
+  <p>Once I connected it to direct indexing it was easy. It's the same concept we already use, with the long/short bolted on. Alfred's version of the ideal case: someone hands us $1M in cash, we buy into a matched benchmark (say 70% US / 30% international), and every position in that middle is an individual stock. So Quantinno is harvesting across the core <em>and</em> the extensions, all year.</p>
+  <p>Ray made the connection in the July 22 meeting and it's the right one: this is the same reason cash is the best funding source for regular direct indexing. No embedded gains to work around. A client account sitting at 5% unrealized gain is close enough to a cash account that it can transition into Core without much friction.</p>
+
+  <h3>DEALS Exchange: the tax exchange fund concept</h3>
+  <p>Client has a concentrated low-basis position they want to diversify out of. Quantinno uses the losses from the long/short extensions to offset the tax bill from gradually selling it down, and reinvests the proceeds into a benchmark. Over several years the client transitions from concentrated to diversified at roughly tax-neutral cost.</p>
+  <p>This one reads to me like a tax exchange fund, and that's the shortcut I'd use with a client who knows what those are, with one difference worth being careful about. In a tax exchange fund, once you're exchanged, you're out of the exposure. Here you're not; the shares sell down over years.</p>
+  <p><strong>The 1099 difference.</strong> In Core and Overlay, the losses hit the client's 1099 and the CPA can point them at anything: RSU sales, a rental property, whatever. In Exchange, the losses are pre-committed to offsetting the sale of the concentrated stock. They're consumed internally. The client technically still has loss activity, but it's more of a wash. They experience the benefit as tax-neutral diversification, not as a number they get to deploy.</p>
+  <p>Timeline is a function of cost basis and leverage (slide 25):</p>
+  <table>
+    <thead><tr><th>Cost basis</th><th>130/30</th><th>145/45</th><th>175/75</th></tr></thead>
+    <tbody>
+      <tr><td>0%</td><td>8.4 yrs</td><td>6.3 yrs</td><td>4.3 yrs</td></tr>
+      <tr><td>25%</td><td>6.3 yrs</td><td>4.8 yrs</td><td>3.3 yrs</td></tr>
+      <tr><td>50%</td><td>4.3 yrs</td><td>3.3 yrs</td><td>2.2 yrs</td></tr>
+      <tr><td>75%</td><td>2.3 yrs</td><td>1.7 yrs</td><td>1.2 yrs</td></tr>
+    </tbody>
+  </table>
+  <p>Maximum leverage for a single concentrated position is 175/75.</p>
+
+  <h3>DEALS Overlay: the one that took me longer</h3>
+  <p>This is the one I needed an example for. Think QQQ, or an individual stock the client is bullish on long term. They're not trying to sell it. But it's sitting there doing nothing, so let's finesse some losses out of it.</p>
+  <p>Quantinno leaves the holding untouched and layers a $30 long extension and $30 short extension on top, using the existing position as margin collateral. No new funding required. The client keeps their exposure and gets loss generation alongside it.</p>
+  <p>Framing it as "the client refuses to sell" is wrong. It's not refusal, it's conviction. They want the position.</p>
+
+  <h3>Why Overlay generates fewer losses than Core</h3>
+  <p>Once the three definitions are clear, the loss numbers explain themselves. Cash-funded Core means more stocks in play, more to harvest across. Overlay means you're only working the margin extensions. The middle is off-limits.</p>
+  <p>Alfred put it directly: in Overlay, there's nothing you can do with the concentrated position in the middle. Quantinno can only harvest off the extensions.</p>
+  <p>Core at 145/45 generates 28.5% in year one (slide 19). Overlay at 45/45 generates 16.5% (slide 23). Similar-looking labels, different harvestable surface.</p>
+
+  <h3>Dynamic hedging: an add-on to Exchange</h3>
+  <p>Optional layer for a client worried about carrying concentrated risk during a multi-year sell-down. Alfred's framing maps it to something clients already understand: it works like a covered call, except instead of the client keeping the premium, Quantinno uses the premium to buy a protective put. Premium-neutral collar. Floor and ceiling on the position while the shares sell down over time.</p>
+  <p>His example: if the client likes where the stock is trading today, the collar locks that range in immediately, so concentration risk is effectively handled now even though the shares take years to physically diversify out. That's the answer for a client who wants out of the exposure but can't stomach the tax hit of liquidating.</p>
+  <p>Constraints worth knowing before offering it (slide 45): $3M account minimum and $3M per collared position, top-100 US large caps only, up to 5 stocks, collar must cover the full position. It can't be paused or adjusted once running. And it's incompatible with QSBS. Hedging before five years kills QSBS status entirely, and after five years you'd have to elect a deemed sale. Quantinno doesn't recommend it for QSBS stock at all.</p>
+
+  <h3>Mixing Exchange and Overlay on the same position</h3>
+  <p>Alfred walked through this on a live case and it's worth having ready. On a $4.5M concentrated position: run Exchange on $3.5M (actively diversifying over about three years) and Overlay on the remaining $1M (generating losses without diversifying it). The Overlay losses can be applied to the Exchange sales, potentially cutting a three-year timeline closer to two.</p>
+  <p>Tradeoff: using the Overlay losses that way lowers the cost basis of the remaining $1M of the position.</p>
+  <p><strong>$1M minimum per strategy.</strong> Both sides of a mixed structure have to independently clear it, and capital is provisioned per strategy at inception. You can't casually shift dollars between them later.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>Are you running into clients where the Core versus Overlay call isn't obvious, part cash and part appreciated holdings? How are you deciding? And for Exchange, how are you setting expectations with someone used to seeing the tax benefit on their 1099?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s7">
+  <h2><span class="num">07</span>Fees</h2>
+  <p>Alfred's explanation is the one to use here, so this section is his rather than mine.</p>
+  <p>The stack on a standard DEALS Core account:</p>
+  <ul>
+    <li>Quantinno management fee: 0.45%</li>
+    <li>DiversiFi advisory fee: 0.6% to 0.8%, depending on account size</li>
+    <li>Financing on the margin running the extensions: roughly 0.15%</li>
+    <li><strong>All-in: approximately 1.2%</strong></li>
+  </ul>
+  <p>That total is in the same range as our normal fee. So the incremental cost to the client versus a plain portfolio is essentially Quantinno's management fee, and what it buys is the tax loss harvesting engine, roughly $340K of annual net tax benefit on a $10M account at 130/30.</p>
+  <p>The comparison Alfred wants made explicit in the meeting: strategy fees and financing costs against tax benefit and long-term performance benefit. Ray framed it the same way. The client wants to know what they're saving on tax versus what they're paying on AUM. Say the math out loud rather than quoting a rate.</p>
+
+  <h3>An important detail on slide 36</h3>
+  <p>The net portfolio return column is net of Quantinno's 0.45% management fee and net of financing and transaction charges. It is <em>not</em> net of our advisory fee. At 0.8% annually that's about 0.06% a month coming off those figures. Not much against the tax benefit, but worth flagging before the client works it out themselves.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>Are you putting the fee number out before the client asks, or waiting for them to raise it?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s8">
+  <h2><span class="num">08</span>Manager selection</h2>
+  <p>Clients who've researched long/short will ask why Quantinno. Alfred's due diligence from the July 22 meeting:</p>
+  <p><strong>AQR.</strong> Market leader, roughly $200B in long/short. Paused on new advisor relationships unless the firm has $5B+ in AUM. Minimum is $3M per strategy, so a client wanting both Exchange and Overlay needs $6M. Not accessible to us at our current size, and the minimums would exclude most of the client base anyway.</p>
+  <p><strong>BlackRock.</strong> Around $5B in long/short. Newer to the space and likely to grow on brand, but not a proven specialist yet.</p>
+  <p><strong>Quantinno.</strong> Roughly $80B in long/short and it's all they do. $1M minimum per strategy, so Exchange plus Overlay needs $2M rather than $6M. Structurally it resembles an AQR spinoff. Founder Hoon Kim ran portfolio construction in AQR's Global Stock Selection Group, and most of the executive team came from there. They've been good to work with.</p>
+  <p>Custodian constraints are worth knowing too. Fidelity has paused new RIAs joining long/short. Schwab caps long/short at 20–30% of firm AUM, so a firm with $100M can only place $30M. The leverage is why.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>When a client asks why Quantinno, are you walking through AQR and BlackRock too, or only if they bring them up?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s9">
+  <h2><span class="num">09</span>Anticipated client questions</h2>
+  <p>The ones I expect to come up most, and how I'd answer them today.</p>
+
+  <h3>What are the fees?</h3>
+  <p>About 1.2% all-in, which is roughly our normal fee. See Section 07.</p>
+
+  <h3>How do the losses actually help me?</h3>
+  <p>Depends which strategy. In Core and Overlay they show up on the 1099 and the CPA applies them against gains elsewhere. In Exchange they're consumed internally offsetting the sale of the concentrated stock.</p>
+
+  <h3>Can I see real performance, not projections?</h3>
+  <p>Yes. Slide 36 is composite performance of actual DEALS Core 130/30 accounts from March 2021 through May 2026. Inception to date: 125.0% net portfolio return against 114.6% for the S&amp;P 500, 10.4% pre-tax outperformance, 26.8% tax benefit, 37.3% cumulative after-tax outperformance. Two caveats: those are DEALS Core specifically, not Overlay or Exchange, and they're net of Quantinno's fee but not ours.</p>
+
+  <h3>How long do I need to stay in?</h3>
+  <p>Alfred: four years minimum, ideally ten, then unwind gradually over about five.</p>
+
+  <h3>What if I want out early?</h3>
+  <p>You can, but the gains realized at unwind offset the losses you took. Quantinno returns the core portfolio intact; the extensions are what produce the gain.</p>
+
+  <h3>What if the market drops?</h3>
+  <p>Net market exposure matches owning the index, so the account falls with the market. Slide 21: the extensions are built market-neutral in sector and factor exposure, so in a downturn losses on the long extensions should be largely offset by gains on the shorts.</p>
+
+  <h3>When do we decide to sell my concentrated position?</h3>
+  <p>Alfred's framing: if there were zero tax consequences to exchanging out today, how much would you do? Whatever they answer becomes the target. Then Exchange on the portion they want gone, Overlay or nothing on the portion they want to keep.</p>
+
+  <h3>Can I use the losses against something specific, like a property sale?</h3>
+  <p>In Core and Overlay, yes. In Exchange they're already committed to the stock sales, though Alfred told a client it's possible to redirect them, it just delays the diversification. The cleaner answer is running Overlay on a separate portion for that purpose. Alfred's line: the capital loss is just a number on your tax return, how you use it is up to you.</p>
+  <p>This came up on a live client call. The client had rental properties they were planning to sell. Worth expecting it.</p>
+
+  <h3>Do I meet with Quantinno?</h3>
+  <p>No. Everything comes through us. We hold the statements, we walk you through performance and tax activity, we handle anything that needs to go back to them. Quantinno is the engine, not a relationship you manage.</p>
+
+  <h3>How is the fee paid?</h3>
+  <p>Automatically from the Schwab account, same as everything else. No invoicing.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>What's missing? If you've already been asked something that isn't on this list, add it and how you answered.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s10">
+  <h2><span class="num">10</span>Client fit</h2>
+  <p>Alfred's criteria from the July 22 meeting: concentrated stock with low cost basis, or cash, or anyone who can see themselves realizing high capital gains. That last one is broad on purpose. The gains could come from a property sale, a liquidity event, or from diversifying the stock itself.</p>
+
+  <h3>Hard constraints</h3>
+  <ul>
+    <li>$1M minimum per strategy. $2M if they want Exchange and Overlay both.</li>
+    <li>Dynamic hedging is $3M per account and $3M per collared position, top-100 US large caps only.</li>
+    <li>Above 145/45 requires portfolio margin at the custodian.</li>
+    <li>Four years minimum in the strategy, per Alfred. Ten is where he'd rather be.</li>
+  </ul>
+
+  <h3>Where it gets harder to call</h3>
+  <p>On July 15 I raised a client retiring next year and whether an aggressive version makes sense there. Alfred's answer was that it can, but the money isn't needed, so the conservative end is the better fit. That's the pattern: retiring doesn't rule it out, it moves you down the leverage scale.</p>
+  <p>Two things I'd want a real answer on before recommending it to someone drawing down: whether they have gains coming from anywhere else, and whether they can sit through a year where tracking error works against them.</p>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>Are you treating the retiree case as a hard no or case by case? And is there a client profile you've already decided against that isn't listed here?</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s11">
+  <h2><span class="num">11</span>Self-quiz</h2>
+  <div class="quiz">
+    <div class="quiz-progress">
+      <div class="progress-track"><div class="progress-fill" id="pf"></div></div>
+      <div class="progress-label" id="pl">1 of 10</div>
+      <div class="score-badge"><span class="ok" id="sc">0</span> / <span id="st">0</span></div>
+    </div>
+    <div id="qbody"></div>
+    <div class="quiz-result" id="qres">
+      <div class="result-num" id="rn">0/10</div>
+      <div class="result-title" id="rt"></div>
+      <div class="result-sub" id="rs"></div>
+      <button class="btn primary" onclick="resetQuiz()">Retake</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section id="s12">
+  <h2><span class="num">12</span>Vocabulary and open questions</h2>
+
+  <h3>Vocabulary</h3>
+  <p><strong>130/30 (or 145/45, 175/75, 200/100).</strong> Dollar exposure notation. For every $100 in the account: $130 long, $30 short. Net market exposure $100, gross activity $160. The extra long and short run on margin.</p>
+  <p><strong>Direct indexing.</strong> Holding the individual stocks that make up an index rather than the index ETF, so each position carries its own cost basis and can be acted on separately for tax purposes.</p>
+  <p><strong>Long extension.</strong> The additional long positions above the 100% core, funded on margin.</p>
+  <p><strong>Short extension.</strong> Borrowed stock sold short. Produces a loss when closed at a higher price than it was opened.</p>
+  <p><strong>Tracking error.</strong> How far the portfolio's return can drift from the benchmark, expressed as a standard deviation. Higher leverage means higher tracking error in both directions.</p>
+  <p><strong>Embedded gain.</strong> Unrealized gain sitting between current market value and cost basis. Becomes taxable at sale or unwind.</p>
+  <p><strong>Options collar / dynamic hedging.</strong> A protective put plus a covered call, structured to be premium-neutral, putting a floor and ceiling on a concentrated position while it diversifies down.</p>
+  <p><strong>Assignment risk.</strong> On a collar, the risk that the stock rallies past the short call strike and gets called away, forcing sale of the full position and taxable gains. Quantinno monitors intraday to minimize it.</p>
+
+  <h3>Open questions for Sajj</h3>
+  <p>Starting list. Add yours in the comments and I'll consolidate before we send anything over. Better one clean list than five separate emails.</p>
+  <ul>
+    <li>Slide 18, "target excess return (net of fees)": net of Quantinno's 0.45% management fee only, or also net of the financing cost?</li>
+    <li>Slide 36 is DEALS Core composite. Is there comparable live-account performance for Overlay and Exchange we can show prospective clients?</li>
+    <li>On a $1M account, how many names are typically long and short? The sample statement showed 259/145. Is that representative, and does it scale with account size or stay roughly fixed?</li>
+    <li>Sector exposure during transition: if a client comes in with a concentrated tech position, is the underweight to IT in the extensions automatic, or is it something we select? Slide 17 shows it happening but doesn't say whose choice it is. Alfred wants this to be a client/advisor decision if it can be.</li>
+    <li>Does Quantinno have a tool that projects actual tax cost at unwind for a specific account: year 5 versus year 10 versus year 15?</li>
+    <li>What's the reference horizon for the alpha model? When they say one name is expected to outperform another, is that over a month, a quarter, six months?</li>
+  </ul>
+
+  <div class="discussion">
+    <div class="label">Discussion</div>
+    <p>Add your questions here and I'll consolidate one list before we send it to Sajj. If something I've listed is already answered in the deck, say so and I'll pull it.</p>
+  </div>
+</section>
+
+<footer>
+  Internal working document · Not for client distribution · DiversiFi Advisory
+</footer>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q: "How does long/short generate losses to harvest even when the market is rising?",
+    options: [
+      "It uses futures contracts to hedge the whole portfolio",
+      "It holds both long and short positions across hundreds of stocks. Whichever direction a given name moves, one of the two position types on it is at a loss.",
+      "It only trades during periods of high volatility",
+      "It doesn't. Long/short only generates losses in a declining market."
+    ],
+    correct: 1,
+    explain: "Longs profit when a stock rises, shorts profit when it falls. So whichever way a name moves, one side is sitting at a harvestable loss. The key point is scale. It's a basket of 400 to 600+ names, not a single pair, so there is always something to realize."
+  },
+  {
+    q: "What does 130/30 mean in dollar terms?",
+    options: [
+      "The strategy targets 130% return with 30% volatility",
+      "130 long positions and 30 short positions",
+      "For every $100 in the account: $130 in long stocks, $30 in shorted stocks. Net exposure $100, gross activity $160.",
+      "A 30% cash allocation alongside 130% equity"
+    ],
+    correct: 2,
+    explain: "The numbers are dollar exposures. Net $100 matches owning the index outright. Gross $160 means Quantinno has more stock to work with for harvesting. The extra $30 long and $30 short run on margin at roughly 0.30% pre-tax cost."
+  },
+  {
+    q: "Why does the short side keep producing losses year after year when long-only harvesting eventually can't?",
+    options: [
+      "The strategy simply trades more frequently",
+      "The short side rotates constantly. A short that rises gets closed at a loss and replaced. Longs are held, so winners accumulate embedded gains and stop being harvestable.",
+      "It applies more leverage to the short side",
+      "The alpha model finds losses the long-only model can't see"
+    ],
+    correct: 1,
+    explain: "The long side is a garden that fills up as winners are held. Long-only drops to roughly 1% by year 4 and effectively nothing after year 5. The short side is a rented parking lot with constant turnover, which is what holds 130/30 at about 3% per year indefinitely."
+  },
+  {
+    q: "A prospective client has $1M in cash and no existing portfolio. Which product fits?",
+    options: [
+      "Overlay, since cash counts as an existing position",
+      "Exchange, since they need diversification",
+      "Core. Quantinno builds the whole portfolio from cash, which is also why it generates the most losses.",
+      "Any of the three would work about the same"
+    ],
+    correct: 2,
+    explain: "Core is for cash or a portfolio that can be rebuilt. Because Quantinno controls the direct-indexed middle as well as the extensions, it harvests across the full $160 rather than just the $60 of extensions: 28.5% in year one at 145/45 versus 16.5% for Overlay at 45/45."
+  },
+  {
+    q: "Alfred uses a 401(k) analogy to explain why exiting early erodes the benefit. What's the mechanism?",
+    options: [
+      "Custodian fees for closing an account early",
+      "Every dollar of realized loss creates a dollar of embedded gain elsewhere. Exiting early realizes those gains and reverses the benefit.",
+      "Quantinno charges an exit fee",
+      "Wash sale rules trigger on exit"
+    ],
+    correct: 1,
+    explain: "Contribute $24,500 to a 401(k) and withdraw it next year. You deferred one year of tax and then paid it. No real benefit. Same here. Four years minimum, ten ideally, then a gradual five-year unwind so the gains spread across tax years rather than landing in one."
+  },
+  {
+    q: "What is the all-in fee on a standard DEALS Core account, and how should it be framed?",
+    options: [
+      "About 0.45%, a discount to standard wealth management",
+      "About 1.2% all-in (Quantinno 0.45%, DiversiFi 0.6–0.8%, financing ~0.15%), which is in the range of our normal fee. The incremental cost buys the tax loss harvesting engine.",
+      "About 2.5%, expensive but justified by the tax benefit",
+      "Too variable by client to estimate"
+    ],
+    correct: 1,
+    explain: "The stack lands around 1.2%, in the same range as standard wealth management. So the real incremental cost versus a plain portfolio is essentially Quantinno's management fee, and what it buys is roughly $340K of annual net tax benefit on a $10M account at 130/30."
+  },
+  {
+    q: "Why Quantinno rather than AQR?",
+    options: [
+      "AQR doesn't offer long/short strategies",
+      "AQR charges more",
+      "Access and minimums. AQR paused new advisors under $5B AUM and requires $3M per strategy, or $6M for Exchange plus Overlay. Quantinno requires $1M per strategy.",
+      "AQR only serves institutions"
+    ],
+    correct: 2,
+    explain: "AQR is the market leader at roughly $200B, but they've paused new advisor relationships and their minimums exclude most of our client base. Quantinno has roughly $80B, does only long/short, and much of its senior team came out of AQR."
+  },
+  {
+    q: "A client asks whether the tax benefit is real or just deferral. What's the honest answer?",
+    options: [
+      "It's permanent elimination of the tax",
+      "Largely deferral. Every dollar of realized loss creates a dollar of embedded gain taxable at unwind. The value comes from time value of money, a potentially lower future bracket, step-up at death, and the deferred dollars staying invested.",
+      "It only works when the market rises",
+      "It isn't a real benefit"
+    ],
+    correct: 1,
+    explain: "Alfred's line: we're not getting rid of the taxes, we're delaying them. That's still worth real money. Paying later beats paying now, the bracket may be lower, step-up at death wipes the deferred gain, and the deferred dollars compound in the portfolio in the meantime."
+  },
+  {
+    q: "A client holds $1M in QQQ with $700K of embedded gain and is bullish long term. Which product fits?",
+    options: [
+      "Core, since they meet the minimum",
+      "Overlay. The QQQ stays untouched and serves as collateral while Quantinno layers the long/short extensions on top.",
+      "Exchange, to diversify them out of it",
+      "None. If they won't sell, DEALS can't help"
+    ],
+    correct: 1,
+    explain: "Overlay is built for exactly this. The client keeps the position they believe in, no new funding is required, and Quantinno generates losses off the $30 long and $30 short extensions. The tradeoff is fewer losses than Core, because there's nothing that can be done with the middle."
+  },
+  {
+    q: "Which profile is the weakest fit?",
+    options: [
+      "A tech professional with regular RSU vests and $5M in taxable accounts",
+      "A retiree drawing 4% from a $3M portfolio to live on, with no other significant source of taxable gain",
+      "A founder mid-liquidity event with $20M in cash to deploy",
+      "A high-income couple with concentrated employer stock they want to diversify"
+    ],
+    correct: 1,
+    explain: "Two problems at once: tracking error they can't absorb while drawing down, and no outside gains to make the losses useful. Worth noting the exclusion is really about the drawdown and the gain flow, not the word 'retiree'. A retiree with an RSU wind-down or a pending property sale may well fit."
+  }
+];
+
+let currentQ = 0;
+let answered = new Array(questions.length).fill(null);
+let correctCount = 0;
+
+const qbody = document.getElementById('qbody');
+const pf = document.getElementById('pf');
+const pl = document.getElementById('pl');
+const sc = document.getElementById('sc');
+const st = document.getElementById('st');
+const qres = document.getElementById('qres');
+
+function renderAll() {
+  qbody.innerHTML = questions.map((qu, idx) => {
+    const letters = ['A', 'B', 'C', 'D'];
+    return `
+      <div class="quiz-q ${idx === currentQ ? 'active' : ''}" data-idx="${idx}">
+        <div class="q-num">Question ${idx + 1} of ${questions.length}</div>
+        <div class="q-text">${qu.q}</div>
+        <div class="options">
+          ${qu.options.map((opt, i) => `
+            <button class="option" data-q="${idx}" data-opt="${i}" onclick="answer(${idx}, ${i})">
+              <span class="letter">${letters[i]}</span>
+              <span>${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="explain" id="explain-${idx}">
+          <div class="label">Explanation</div>
+          <p>${qu.explain}</p>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn" onclick="prevQ()" ${idx === 0 ? 'disabled' : ''}>← Previous</button>
+          <button class="btn primary" onclick="nextQ()">${idx === questions.length - 1 ? 'See results →' : 'Next →'}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  updateProgress();
+}
+
+function answer(qIdx, optIdx) {
+  if (answered[qIdx] !== null) return;
+  answered[qIdx] = optIdx;
+  const correctIdx = questions[qIdx].correct;
+  const buttons = document.querySelectorAll(`[data-q="${qIdx}"]`);
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctIdx) btn.classList.add('correct');
+    else if (i === optIdx) btn.classList.add('incorrect');
+  });
+  document.getElementById(`explain-${qIdx}`).classList.add('show');
+  if (optIdx === correctIdx) correctCount++;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = answered.filter(x => x !== null).length;
+  pf.style.width = ((total / questions.length) * 100) + '%';
+  pl.textContent = `${currentQ + 1} of ${questions.length}`;
+  sc.textContent = correctCount;
+  st.textContent = total;
+}
+
+function showQ(idx) {
+  currentQ = idx;
+  document.querySelectorAll('.quiz-q').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.idx) === idx);
+  });
+  updateProgress();
+}
+
+function nextQ() { if (currentQ < questions.length - 1) showQ(currentQ + 1); else showResult(); }
+function prevQ() { if (currentQ > 0) showQ(currentQ - 1); }
+
+function showResult() {
+  qbody.style.display = 'none';
+  document.querySelector('.quiz-progress').style.display = 'none';
+  qres.classList.add('show');
+  document.getElementById('rn').textContent = `${correctCount}/${questions.length}`;
+  const pct = (correctCount / questions.length) * 100;
+  let title, sub;
+  if (pct === 100) { title = "All ten."; sub = "Ready to walk a client through this without backup."; }
+  else if (pct >= 70) { title = "Solid working knowledge."; sub = "Worth rereading the sections behind the ones you missed."; }
+  else if (pct >= 40) { title = "Getting there."; sub = "Go back through the sections matching the questions you missed."; }
+  else { title = "Worth another pass."; sub = "Start from section 01. The concepts build on each other."; }
+  document.getElementById('rt').textContent = title;
+  document.getElementById('rs').textContent = sub;
+}
+
+function resetQuiz() {
+  currentQ = 0;
+  answered = new Array(questions.length).fill(null);
+  correctCount = 0;
+  qbody.style.display = '';
+  document.querySelector('.quiz-progress').style.display = '';
+  qres.classList.remove('show');
+  renderAll();
+  document.getElementById('s11').scrollIntoView();
+}
+
+renderAll();
+</script>
+
+<!-- Firebase comment system -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+  import {
+    getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+    doc, updateDoc, deleteDoc, serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAsL6LstdvCiDAyxkHXk4WxeYdqUCSnQgg",
+    authDomain: "quantinno-x-advisors.firebaseapp.com",
+    projectId: "quantinno-x-advisors",
+    storageBucket: "quantinno-x-advisors.firebasestorage.app",
+    messagingSenderId: "1650063231",
+    appId: "1:1650063231:web:13322b749a3533c7384c4a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Persistent per-browser identity
+  let authorId = localStorage.getItem('dfi_commenter_id');
+  if (!authorId) {
+    authorId = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('dfi_commenter_id', authorId);
+  }
+  const savedName = localStorage.getItem('dfi_commenter_name') || '';
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  function formatTime(ts) {
+    if (!ts) return 'just now';
+    try {
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    } catch (e) { return ''; }
+  }
+
+  // Inject a comment block after each discussion prompt
+  document.querySelectorAll('.discussion').forEach(disc => {
+    const section = disc.closest('section');
+    if (!section) return;
+    const sectionId = section.id;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'comments';
+    wrap.dataset.section = sectionId;
+    wrap.innerHTML = `
+      <div class="comments-header">Comments</div>
+      <div class="comments-list" id="comments-${sectionId}">
+        <div class="no-comments">No comments yet.</div>
+      </div>
+      <div class="comment-form">
+        <input type="text" class="input-name" placeholder="Your name" value="${esc(savedName)}" maxlength="60" />
+        <textarea class="input-text" placeholder="Add your thinking, a question, or where you're stuck. Everyone on the doc sees this."></textarea>
+        <div class="form-row">
+          <span class="hint">Comments are visible to everyone with the link.</span>
+          <button class="submit-btn" data-section="${sectionId}">Post</button>
+        </div>
+        <div class="comment-status" data-status="${sectionId}"></div>
+      </div>
+    `;
+    disc.parentNode.insertBefore(wrap, disc.nextSibling);
+  });
+
+  // Real-time listener for all comments
+  const q = query(collection(db, 'comments'), orderBy('timestamp', 'asc'));
+  onSnapshot(q,
+    (snapshot) => {
+      const bySection = {};
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (!bySection[data.sectionId]) bySection[data.sectionId] = [];
+        bySection[data.sectionId].push({ id: docSnap.id, ...data });
+      });
+
+      document.querySelectorAll('.comments-list').forEach(list => {
+        const sectionId = list.id.replace('comments-', '');
+        const comments = bySection[sectionId] || [];
+
+        // Preserve any in-flight edits
+        const editingIds = Array.from(list.querySelectorAll('.comment-item.editing')).map(el => el.dataset.id);
+
+        if (comments.length === 0) {
+          list.innerHTML = '<div class="no-comments">No comments yet.</div>';
+          return;
+        }
+
+        list.innerHTML = comments.map(c => {
+          const isOwner = c.authorId === authorId;
+          const editedTag = c.edited ? ' <span style="opacity:0.6">(edited)</span>' : '';
+          return `
+            <div class="comment-item ${editingIds.includes(c.id) ? 'editing' : ''}" data-id="${c.id}">
+              <div class="comment-meta">
+                <span class="name">${esc(c.name)}</span>
+                <span class="time">${formatTime(c.timestamp)}${editedTag}</span>
+                ${isOwner ? `
+                  <div class="comment-actions">
+                    <button class="comment-action" data-action="edit" data-id="${c.id}">Edit</button>
+                    <button class="comment-action" data-action="delete" data-id="${c.id}">Delete</button>
+                  </div>
+                ` : ''}
+              </div>
+              <div class="comment-body">${esc(c.text)}</div>
+              <div class="edit-form">
+                <textarea class="edit-text">${esc(c.text)}</textarea>
+                <div class="edit-actions">
+                  <button class="save" data-action="save" data-id="${c.id}">Save</button>
+                  <button class="cancel" data-action="cancel" data-id="${c.id}">Cancel</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+    },
+    (err) => {
+      console.error('Firestore listener error:', err);
+      document.querySelectorAll('.comments-list').forEach(list => {
+        list.innerHTML = '<div class="no-comments" style="color:#C4482E">Could not load comments. Check Firebase configuration.</div>';
+      });
+    }
+  );
+
+  // Post / edit / delete
+  document.body.addEventListener('click', async (e) => {
+    if (e.target.matches('.submit-btn')) {
+      const container = e.target.closest('.comments');
+      const sectionId = e.target.dataset.section;
+      const nameInput = container.querySelector('.input-name');
+      const textInput = container.querySelector('.input-text');
+      const status = container.querySelector(`[data-status="${sectionId}"]`);
+      const name = nameInput.value.trim();
+      const text = textInput.value.trim();
+
+      status.className = 'comment-status';
+      status.textContent = '';
+
+      if (!name) { status.className = 'comment-status error'; status.textContent = 'Enter your name first.'; return; }
+      if (!text) { status.className = 'comment-status error'; status.textContent = 'Enter a comment.'; return; }
+
+      e.target.disabled = true;
+      e.target.textContent = 'Posting...';
+      try {
+        await addDoc(collection(db, 'comments'), {
+          sectionId, name, text, authorId,
+          timestamp: serverTimestamp(),
+          edited: false
+        });
+        localStorage.setItem('dfi_commenter_name', name);
+        textInput.value = '';
+        status.textContent = 'Posted.';
+        setTimeout(() => { status.textContent = ''; }, 2000);
+      } catch (err) {
+        console.error(err);
+        status.className = 'comment-status error';
+        status.textContent = 'Could not post: ' + err.message;
+      } finally {
+        e.target.disabled = false;
+        e.target.textContent = 'Post';
+      }
+      return;
+    }
+
+    const action = e.target.dataset.action;
+    if (!action) return;
+    const id = e.target.dataset.id;
+    const item = document.querySelector(`.comment-item[data-id="${id}"]`);
+    if (!item) return;
+
+    if (action === 'edit') {
+      item.classList.add('editing');
+      item.querySelector('.edit-text').focus();
+    } else if (action === 'cancel') {
+      item.classList.remove('editing');
+    } else if (action === 'delete') {
+      if (!confirm('Delete this comment?')) return;
+      try { await deleteDoc(doc(db, 'comments', id)); }
+      catch (err) { alert('Could not delete: ' + err.message); }
+    } else if (action === 'save') {
+      const newText = item.querySelector('.edit-text').value.trim();
+      if (!newText) return;
+      try {
+        await updateDoc(doc(db, 'comments', id), { text: newText, edited: true });
+        item.classList.remove('editing');
+      } catch (err) { alert('Could not save: ' + err.message); }
+    }
+  });
+</script>
+
+</body>
+</html>

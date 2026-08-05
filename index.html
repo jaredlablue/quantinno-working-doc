@@ -454,15 +454,15 @@ footer {
   <p>Alfred's number for the mature state: once the strategy has settled, you're looking at roughly 4% to 4.5% of account value per year in net capital losses, ongoing. Not much, but enough to keep offsetting gains on distributions or other events.</p>
 
   <h3>Net capital losses as a percentage of beginning value</h3>
-  <p>Cash-funded accounts, from slides 11 and 19.</p>
+  <p>Cash-funded accounts, from slides 11 and 19. Dollar figures are on a $1M account.</p>
   <table>
     <thead><tr><th>Year</th><th>Long-only</th><th>DEALS 130/30</th><th>DEALS 145/45</th></tr></thead>
     <tbody>
-      <tr><td>Year 1</td><td>12%</td><td>23.0%</td><td>28.5%</td></tr>
-      <tr><td>Year 2</td><td>6%</td><td>13.0%</td><td>16.5%</td></tr>
-      <tr><td>Year 3</td><td>3%</td><td>9.0%</td><td>12.0%</td></tr>
-      <tr><td>Year 5</td><td>1%</td><td>4.0%</td><td>5.5%</td></tr>
-      <tr><td>Year 6+</td><td>~0%</td><td>3.0%</td><td>4.5%</td></tr>
+      <tr><td>Year 1</td><td>12%</td><td>23.0% &middot; $230K</td><td>28.5% &middot; $285K</td></tr>
+      <tr><td>Year 2</td><td>6%</td><td>13.0% &middot; $130K</td><td>16.5% &middot; $165K</td></tr>
+      <tr><td>Year 3</td><td>3%</td><td>9.0% &middot; $90K</td><td>12.0% &middot; $120K</td></tr>
+      <tr><td>Year 5</td><td>1%</td><td>4.0% &middot; $40K</td><td>5.5% &middot; $55K</td></tr>
+      <tr><td>Year 6+</td><td>~0%</td><td>3.0% &middot; $30K</td><td>4.5% &middot; $45K</td></tr>
     </tbody>
   </table>
   <p>Alfred uses dollars, not percentages: on a $1M account at 145/45, "28.5% sounds good, $285K of losses sounds better."</p>
@@ -625,7 +625,7 @@ footer {
   <p>Depends which strategy. In Core and Overlay they show up on the 1099 and the CPA applies them against gains elsewhere. In Exchange they're consumed internally offsetting the sale of the concentrated stock.</p>
 
   <h3>Can I see real performance, not projections?</h3>
-  <p>Yes. Slide 36 is composite performance of actual DEALS Core 130/30 accounts from March 2021 through May 2026. Inception to date: 125.0% net portfolio return against 114.6% for the S&amp;P 500, 10.4% pre-tax outperformance, 26.8% tax benefit, 37.3% cumulative after-tax outperformance. Two caveats: those are DEALS Core specifically, not Overlay or Exchange, and they're net of Quantinno's fee but not ours.</p>
+  <p>Yes. Slide 36 is composite performance of actual DEALS Core 130/30 accounts from March 2021 through June 2026. Inception to date: 123.5% net portfolio return against 112.5% for the S&amp;P 500, 11.0% pre-tax outperformance, 27.4% tax benefit, 38.4% cumulative after-tax outperformance. On a $1M account, that 27.4% tax benefit is $274K in losses. Growth of $1M over the period: $2.23M in the strategy versus $2.13M in the S&amp;P. Two caveats: those are DEALS Core specifically, not Overlay or Exchange, and they're net of Quantinno's fee but not ours.</p>
 
   <h3>How long do I need to stay in?</h3>
   <p>Alfred: four years minimum, ideally ten, then unwind gradually over about five.</p>
@@ -739,10 +739,10 @@ const questions = [
   {
     q: "How does long/short generate losses to harvest even when the market is rising?",
     options: [
-      "It uses futures contracts to hedge the whole portfolio",
-      "It holds both long and short positions across hundreds of stocks. Whichever direction a given name moves, one of the two position types on it is at a loss.",
-      "It only trades during periods of high volatility",
-      "It doesn't. Long/short only generates losses in a declining market."
+      "The short positions are chosen to move opposite the longs, so when the market climbs the shorts reliably fall and book harvestable losses.",
+      "It holds hundreds of long and short positions, and since names move independently, some sit below cost basis regardless of market direction, so there's always something to harvest.",
+      "Rising markets raise turnover, and each time Quantinno rebalances the basket it realizes losses on the positions it trims out.",
+      "The financing cost on the margin extensions is booked as a capital loss, which offsets realized gains elsewhere in the account."
     ],
     correct: 1,
     explain: "Longs profit when a stock rises, shorts profit when it falls. So whichever way a name moves, one side is sitting at a harvestable loss. The key point is scale. It's a basket of 400 to 600+ names, not a single pair, so there is always something to realize."
@@ -750,100 +750,100 @@ const questions = [
   {
     q: "What does 130/30 mean in dollar terms?",
     options: [
-      "The strategy targets 130% return with 30% volatility",
-      "130 long positions and 30 short positions",
-      "For every $100 in the account: $130 in long stocks, $30 in shorted stocks. Net exposure $100, gross activity $160.",
-      "A 30% cash allocation alongside 130% equity"
+      "For every $100 in the account, $130 is held in long stocks and $30 in shorted stocks. Net exposure is $100, gross activity is $160.",
+      "For every $100 in the account, $130 is invested and $30 is held back in cash as a buffer against the short book.",
+      "The account holds roughly 130 long positions against 30 short positions, sized so the two books offset on market direction.",
+      "The strategy targets a 130% long allocation while capping total short exposure at 30% of the benchmark's volatility."
     ],
-    correct: 2,
+    correct: 0,
     explain: "The numbers are dollar exposures. Net $100 matches owning the index outright. Gross $160 means Quantinno has more stock to work with for harvesting. The extra $30 long and $30 short run on margin at roughly 0.30% pre-tax cost."
   },
   {
     q: "Why does the short side keep producing losses year after year when long-only harvesting eventually can't?",
     options: [
-      "The strategy simply trades more frequently",
-      "The short side rotates constantly. A short that rises gets closed at a loss and replaced. Longs are held, so winners accumulate embedded gains and stop being harvestable.",
-      "It applies more leverage to the short side",
-      "The alpha model finds losses the long-only model can't see"
+      "The alpha model keeps finding fresh losses on the long book that a plain long-only direct-indexing model isn't positioned to see.",
+      "The short side runs at higher leverage, so its positions swing harder and throw off larger realized losses each year.",
+      "The short side rotates constantly. A short that rises gets closed at a loss and replaced, while longs are held, so winners accumulate embedded gains and stop being harvestable.",
+      "The short book is rebalanced to the benchmark quarterly, and each forced rebalance realizes a loss on the names being cycled out."
     ],
-    correct: 1,
+    correct: 2,
     explain: "The long side is a garden that fills up as winners are held. Long-only drops to roughly 1% by year 4 and effectively nothing after year 5. The short side is a rented parking lot with constant turnover, which is what holds 130/30 at about 3% per year indefinitely."
   },
   {
     q: "A prospective client has $1M in cash and no existing portfolio. Which product fits?",
     options: [
-      "Overlay, since cash counts as an existing position",
-      "Exchange, since they need diversification",
-      "Core. Quantinno builds the whole portfolio from cash, which is also why it generates the most losses.",
-      "Any of the three would work about the same"
+      "Exchange, since starting from cash means they need to build a diversified position from scratch over several years.",
+      "Overlay, since the cash sits as collateral and Quantinno layers the long/short extensions on top of it.",
+      "Any of the three works about equally well, since a cash account clears every product's minimum and constraints.",
+      "Core. Quantinno builds the whole portfolio from cash, which is also why it generates the most losses."
     ],
-    correct: 2,
+    correct: 3,
     explain: "Core is for cash or a portfolio that can be rebuilt. Because Quantinno controls the direct-indexed middle as well as the extensions, it harvests across the full $160 rather than just the $60 of extensions: 28.5% in year one at 145/45 versus 16.5% for Overlay at 45/45."
   },
   {
     q: "Alfred uses a 401(k) analogy to explain why exiting early erodes the benefit. What's the mechanism?",
     options: [
-      "Custodian fees for closing an account early",
-      "Every dollar of realized loss creates a dollar of embedded gain elsewhere. Exiting early realizes those gains and reverses the benefit.",
-      "Quantinno charges an exit fee",
-      "Wash sale rules trigger on exit"
+      "Every dollar of realized loss creates a dollar of embedded gain elsewhere, so exiting early realizes those gains and reverses the benefit.",
+      "The heavy harvesting is front-loaded in the first years, so leaving early means you've paid the fees without collecting the later losses.",
+      "Closing the account inside the first few years triggers wash-sale disallowance on the losses harvested up to that point.",
+      "Unwinding early forces the extensions to be sold at short-term rates rather than the long-term rates you'd get by waiting."
     ],
-    correct: 1,
+    correct: 0,
     explain: "Contribute $24,500 to a 401(k) and withdraw it next year. You deferred one year of tax and then paid it. No real benefit. Same here. Four years minimum, ten ideally, then a gradual five-year unwind so the gains spread across tax years rather than landing in one."
   },
   {
     q: "What is the all-in fee on a standard DEALS Core account, and how should it be framed?",
     options: [
-      "About 0.45%, a discount to standard wealth management",
-      "About 1.2% all-in (Quantinno 0.45%, DiversiFi 0.6–0.8%, financing ~0.15%), which is in the range of our normal fee. The incremental cost buys the tax loss harvesting engine.",
-      "About 2.5%, expensive but justified by the tax benefit",
-      "Too variable by client to estimate"
+      "About 0.45% all-in, since Quantinno's management fee is the only cost the client pays on top of a normal portfolio.",
+      "About 2.5% all-in, higher than a standard portfolio but justified by the size of the tax benefit it produces.",
+      "About 1.2% all-in (Quantinno 0.45%, DiversiFi 0.6–0.8%, financing ~0.15%), roughly our normal fee, and the incremental cost buys the harvesting engine.",
+      "It varies too much by account size and leverage level to give a client a single all-in number before implementation."
     ],
-    correct: 1,
+    correct: 2,
     explain: "The stack lands around 1.2%, in the same range as standard wealth management. So the real incremental cost versus a plain portfolio is essentially Quantinno's management fee, and what it buys is roughly $340K of annual net tax benefit on a $10M account at 130/30."
   },
   {
     q: "Why Quantinno rather than AQR?",
     options: [
-      "AQR doesn't offer long/short strategies",
-      "AQR charges more",
+      "AQR is newer to long/short and hasn't built the track record Quantinno has in the strategy.",
       "Access and minimums. AQR paused new advisors under $5B AUM and requires $3M per strategy, or $6M for Exchange plus Overlay. Quantinno requires $1M per strategy.",
-      "AQR only serves institutions"
+      "AQR runs a smaller long/short book, so Quantinno has more capacity to take on new accounts at our size.",
+      "AQR's fees run materially higher, which erodes the net tax benefit on the accounts we'd place."
     ],
-    correct: 2,
+    correct: 1,
     explain: "AQR is the market leader at roughly $200B, but they've paused new advisor relationships and their minimums exclude most of our client base. Quantinno has roughly $80B, does only long/short, and much of its senior team came out of AQR."
   },
   {
     q: "A client asks whether the tax benefit is real or just deferral. What's the honest answer?",
     options: [
-      "It's permanent elimination of the tax",
-      "Largely deferral. Every dollar of realized loss creates a dollar of embedded gain taxable at unwind. The value comes from time value of money, a potentially lower future bracket, step-up at death, and the deferred dollars staying invested.",
-      "It only works when the market rises",
-      "It isn't a real benefit"
+      "It's permanent. The harvested losses offset gains dollar-for-dollar and never have to be paid back to the IRS.",
+      "It's real only in rising markets, since a flat or falling market doesn't produce the embedded gains that fund the benefit.",
+      "It's largely deferral. Each realized loss creates a dollar of embedded gain taxable at unwind, and the value comes from time value of money, a lower future bracket, step-up at death, and the deferred dollars staying invested.",
+      "It's a wash. What you save in harvested losses you pay back in fees, so the benefit is roughly neutral over the life of the account."
     ],
-    correct: 1,
+    correct: 2,
     explain: "Alfred's line: we're not getting rid of the taxes, we're delaying them. That's still worth real money. Paying later beats paying now, the bracket may be lower, step-up at death wipes the deferred gain, and the deferred dollars compound in the portfolio in the meantime."
   },
   {
     q: "A client holds $1M in QQQ with $700K of embedded gain and is bullish long term. Which product fits?",
     options: [
-      "Core, since they meet the minimum",
-      "Overlay. The QQQ stays untouched and serves as collateral while Quantinno layers the long/short extensions on top.",
-      "Exchange, to diversify them out of it",
-      "None. If they won't sell, DEALS can't help"
+      "Exchange, so Quantinno can gradually sell the QQQ down and diversify them into a benchmark at tax-neutral cost.",
+      "Core, since at $1M they clear the minimum and Quantinno can rebuild the position as a direct-indexed core.",
+      "None. If the client won't sell the position, there's no way for DEALS to generate losses off it.",
+      "Overlay. The QQQ stays untouched and serves as collateral while Quantinno layers the long/short extensions on top."
     ],
-    correct: 1,
+    correct: 3,
     explain: "Overlay is built for exactly this. The client keeps the position they believe in, no new funding is required, and Quantinno generates losses off the $30 long and $30 short extensions. The tradeoff is fewer losses than Core, because there's nothing that can be done with the middle."
   },
   {
     q: "Which profile is the weakest fit?",
     options: [
       "A tech professional with regular RSU vests and $5M in taxable accounts",
-      "A retiree drawing 4% from a $3M portfolio to live on, with no other significant source of taxable gain",
       "A founder mid-liquidity event with $20M in cash to deploy",
+      "A retiree drawing 4% from a $3M portfolio to live on, with no other significant source of taxable gain",
       "A high-income couple with concentrated employer stock they want to diversify"
     ],
-    correct: 1,
+    correct: 2,
     explain: "Two problems at once: tracking error they can't absorb while drawing down, and no outside gains to make the losses useful. Worth noting the exclusion is really about the drawdown and the gain flow, not the word 'retiree'. A retiree with an RSU wind-down or a pending property sale may well fit."
   }
 ];
